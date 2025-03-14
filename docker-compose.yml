@@ -1,0 +1,16 @@
+services:
+  backend:
+    build: "./todo/demo/"
+    container_name: backend_container
+    ports:
+      - "8080:8080"
+    restart: always
+
+  frontend:
+    build: "./todo-react/"
+    container_name: frontend_container
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: always
