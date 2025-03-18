@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,4 +15,5 @@ public class Todo {
     private Long id;
     private String text;
     private boolean checked;
+    private LocalDate date;
 }

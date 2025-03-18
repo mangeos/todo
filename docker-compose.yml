@@ -2,9 +2,18 @@ services:
   backend:
     build: "./todo/demo/"
     container_name: backend_container
+    depends_on:
+      db:
+        condition: service_healthy  # Väntar tills db är redo
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/todo
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
     ports:
       - "8080:8080"
     restart: always
+    networks:
+      - my_network
 
   frontend:
     build: "./todo-react/"
@@ -14,3 +23,31 @@ services:
     depends_on:
       - backend
     restart: always
+    networks:
+      - my_network
+  
+  db:
+    build:
+      context: .  # Peka på katalogen där Dockerfile.db ligger
+      dockerfile: Dockerfile.db  # Filnamn för Dockerfile
+    container_name: my_postgres_db
+    restart: always
+
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user"]
+      interval: 5s
+      retries: 5
+      timeout: 3s
+    networks:
+      - my_network
+
+volumes:
+  pgdata:
+
+networks:
+  my_network:
+    driver: bridge  # Standardnätverk för Docker

@@ -1,63 +1,54 @@
 package com.example.demo;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import java.time.LocalDate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.model.Todo;
+import com.example.demo.service.TodoService;
 
 @RestController
 @CrossOrigin(origins = "*")
 public class HomeController {
-    private final List<Todo> todos = new ArrayList<>();
 
-    public HomeController() {
+    private TodoService todoService;
 
+    public HomeController(TodoService todoService) {
+        this.todoService = todoService;
     }
 
     @GetMapping("/todos")
     public List<Todo> getTodos() {
-        return todos;
+        return todoService.getAllTodos();
+    }
+
+    @GetMapping("/todos/date")
+    public List<Todo> getTodosByDate(@RequestParam("date") String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        return todoService.getTodosByDate(localDate);
     }
 
     @PostMapping("/todos")
     public Todo addTodo(@RequestBody Todo todo) {
-        // todo.setId(tod); // Sätt unikt ID
-        System.out.println(todo);
-        todos.add(todo);
-        return todo;
+        return todoService.createTodo(todo);
     }
 
     @PutMapping("/todos/{id}")
     public Todo updateTodo(@PathVariable Long id, @RequestBody Todo updatedTodo) {
-        Optional<Todo> existingTodo = todos.stream()
-                .filter(todo -> todo.getId().equals(id))
-                .findFirst();
-
-        if (existingTodo.isPresent()) {
-            Todo todo = existingTodo.get();
-            todo.setText(updatedTodo.getText());
-            todo.setChecked(updatedTodo.isChecked());
-            System.out.println(todo);
-            return todo;
-        } else {
-            throw new RuntimeException("Todo not found");
-        }
+        return todoService.updateTodo(id, updatedTodo);
     }
 
     @DeleteMapping("/todos/{id}")
     public void deleteTodo(@PathVariable Long id) {
-        todos.removeIf(todo -> todo.getId().equals(id));
+        todoService.deleteTodo(id);
     }
 }

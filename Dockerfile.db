@@ -1,0 +1,10 @@
+# Använd den officiella PostgreSQL-bilden
+FROM postgres:16
+
+# Sätt miljövariabler för standardanvändare och databas
+ENV POSTGRES_USER=user
+ENV POSTGRES_PASSWORD=password
+
+
+# Skapa databasen manuellt vid initiering
+COPY init.sql /docker-entrypoint-initdb.d/
