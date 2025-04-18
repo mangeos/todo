@@ -1,6 +1,12 @@
 package com.example.demo.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,4 +22,10 @@ public class Todo {
     private String text;
     private boolean checked;
     private LocalDate date;
+    private String groupName;
+
+    // @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group; // En todo tillhör en grupp
 }

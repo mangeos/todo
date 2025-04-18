@@ -7,7 +7,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
    server: {
-    port: 5173, // Du kan välja vilken port du vill köra på
+    port: 3000, // Du kan välja vilken port du vill köra på
   },
   build: {
     outDir: 'build', // Den här inställningen säkerställer att byggda filer hamnar i ./build-mappen
