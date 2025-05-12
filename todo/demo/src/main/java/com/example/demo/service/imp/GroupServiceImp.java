@@ -10,6 +10,7 @@ import com.example.demo.dto.GroupDTO;
 import com.example.demo.dto.TodoDTO;
 import com.example.demo.model.Group;
 import com.example.demo.model.User;
+import com.example.demo.model.Todo;
 import com.example.demo.repository.GroupRepository;
 import com.example.demo.repository.TodoRepository;
 import com.example.demo.repository.UserRepository;
@@ -118,5 +119,24 @@ public class GroupServiceImp implements GroupService {
                                                                                 todo.getDate()))
                                                                 .collect(Collectors.toList())))
                                 .collect(Collectors.toList());
+        }
+
+        @Override
+        @Transactional
+        public void deleteTodosByGroup(String groupName) {
+                Group group = groupRepository.findByName(groupName);
+
+                for (User user : group.getUsers()) {
+                        user.getGroups().remove(group);
+                }
+                // Radera alla användare kopplade till gruppen
+                group.getUsers().clear();
+                // Radera alla todos kopplade till gruppen
+                List<Todo> todos = todoRepository.findByGroupName(groupName);
+                for (Todo todo : todos) {
+                        todoRepository.deleteById(todo.getId());
+                }
+                // Radera gruppen från databasen
+                groupRepository.delete(group);
         }
 }

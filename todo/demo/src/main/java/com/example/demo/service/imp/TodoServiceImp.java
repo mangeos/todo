@@ -35,9 +35,6 @@ public class TodoServiceImp implements TodoService {
     private GroupRepository groupRepository;
 
     @Autowired
-    private GroupServiceImp groupServiceImp;
-
-    @Autowired
     private JwtService jwtService;
 
     @Autowired
@@ -61,9 +58,16 @@ public class TodoServiceImp implements TodoService {
     }
 
     @Override
-    public Todo getTodoById(Long id) {
+    public TodoDTO getTodoById(Long id) {
         Optional<Todo> todo = todoRepository.findById(id);
-        return todo.orElse(null);
+
+        // convert to DTO
+        if (todo.isPresent()) {
+            Todo foundTodo = todo.get();
+            return new TodoDTO(foundTodo.getId(), foundTodo.getText(), foundTodo.isChecked(),
+                    foundTodo.getDate());
+        }
+        return null; // eller kasta ett undantag om todo inte hittas
     }
 
     // @Override
@@ -118,7 +122,7 @@ public class TodoServiceImp implements TodoService {
     // }
 
     @Override
-    public Todo updateTodo(Long id, Todo updatedTodo) {
+    public TodoDTO updateTodo(Long id, Todo updatedTodo) {
 
         // Hämta den befintliga todo:n från databasen
         Todo existingTodo = todoRepository.findById(id)
@@ -136,10 +140,16 @@ public class TodoServiceImp implements TodoService {
         existingTodo.setText(updatedTodo.getText());
         existingTodo.setChecked(updatedTodo.isChecked());
         existingTodo.setDate(updatedTodo.getDate());
-        existingTodo.setGroupName(updatedTodo.getGroupName());
+        // existingTodo.setGroupName(updatedTodo.getGroupName());
 
         // Spara den uppdaterade todo:n
-        return todoRepository.save(existingTodo);
+        Todo newTodo = todoRepository.save(existingTodo);
+
+        // Konvertera den uppdaterade todo:n till DTO
+        TodoDTO todoDTO = new TodoDTO(newTodo.getId(), newTodo.getText(), newTodo.isChecked(),
+                newTodo.getDate());
+        return todoDTO;
+
     }
 
     @Override
@@ -148,24 +158,35 @@ public class TodoServiceImp implements TodoService {
     }
 
     @Override
-    @Transactional
-    public void deleteTodosByGroup(String groupName) {
-        todoRepository.deleteByGroupName(groupName);
+    public List<TodoDTO> getTodosByDate(LocalDate date) {
+
+        List<Todo> todo = todoRepository.findByDate(date); // Implementera metod för att hämta todos baserat på datum
+        // convert to DTO
+        List<TodoDTO> todoDTOs = todo.stream()
+                .map(t -> new TodoDTO(t.getId(), t.getText(), t.isChecked(), t.getDate()))
+                .toList();
+        return todoDTOs;
     }
 
     @Override
-    public List<Todo> getTodosByDate(LocalDate date) {
-        return todoRepository.findByDate(date); // Implementera metod för att hämta todos baserat på datum
-    }
-
-    @Override
-    public List<Todo> getTodosGroupNameAndDate(String groupName, String date) {
+    public List<TodoDTO> getTodosGroupNameAndDate(String groupName, String date) {
         LocalDate localDate = LocalDate.parse(date);
-        return todoRepository.findByGroupNameAndDate(groupName, localDate);
+        List<Todo> todo = todoRepository.findByGroupNameAndDate(groupName, localDate);
+        // convert to DTO
+        List<TodoDTO> todoDTOs = todo.stream()
+                .map(t -> new TodoDTO(t.getId(), t.getText(), t.isChecked(), t.getDate()))
+                .toList();
+        return todoDTOs;
+
     }
 
     @Override
-    public List<Todo> getTodosByGroup(String groupName) {
-        return todoRepository.findByGroupName(groupName);
+    public List<TodoDTO> getTodosByGroup(String groupName) {
+        List<Todo> todo = todoRepository.findByGroupName(groupName);
+        // convert to DTO
+        List<TodoDTO> todoDTOs = todo.stream()
+                .map(t -> new TodoDTO(t.getId(), t.getText(), t.isChecked(), t.getDate()))
+                .toList();
+        return todoDTOs;
     }
 }

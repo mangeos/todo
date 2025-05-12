@@ -9,19 +9,19 @@ import com.example.demo.model.Todo;
 public interface TodoService {
     List<Todo> getAllTodos();
 
-    Todo getTodoById(Long id);
+    TodoDTO getTodoById(Long id);
 
     TodoDTO createTodo(Todo todo, Long groupId);
 
-    Todo updateTodo(Long id, Todo todo);
+    TodoDTO updateTodo(Long id, Todo todo);
 
     void deleteTodo(Long id);
 
-    void deleteTodosByGroup(String groupName);
+    // void deleteTodosByGroup(String groupName);
 
-    List<Todo> getTodosByDate(LocalDate date);
+    List<TodoDTO> getTodosByDate(LocalDate date);
 
-    List<Todo> getTodosGroupNameAndDate(String groupName, String date);
+    List<TodoDTO> getTodosGroupNameAndDate(String groupName, String date);
 
-    List<Todo> getTodosByGroup(String groupName);
+    List<TodoDTO> getTodosByGroup(String groupName);
 }

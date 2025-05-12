@@ -10,4 +10,8 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     List<Group> findByUsers_Id(Long userId);
 
+    void deleteByName(String groupName);
+
+    Group findByName(String groupName);
+
 }

@@ -14,6 +14,6 @@ public interface GroupService {
 
     List<GroupDTO> findAll();
 
-    // void deleteGroup(Long id);
+    void deleteTodosByGroup(String groupName);
 
 }

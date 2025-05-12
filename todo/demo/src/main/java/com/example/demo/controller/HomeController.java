@@ -42,20 +42,20 @@ public class HomeController {
     }
 
     @GetMapping("/todos/date")
-    public List<Todo> getTodosByDate(@RequestParam("date") String date) {
+    public List<TodoDTO> getTodosByDate(@RequestParam("date") String date) {
         LocalDate localDate = LocalDate.parse(date);
         return todoService.getTodosByDate(localDate);
     }
 
     @GetMapping("/todos/group/date")
-    public List<Todo> getTodosByGroupAndDate(@RequestParam("groupName") String groupName,
+    public List<TodoDTO> getTodosByGroupAndDate(@RequestParam("groupName") String groupName,
             @RequestParam("date") String date) {
         System.out.println(groupName + "-" + date);
         return todoService.getTodosGroupNameAndDate(groupName, date);
     }
 
     @GetMapping("/todos/group")
-    public List<Todo> getTodosByGroup(@RequestParam("groupName") String groupName) {
+    public List<TodoDTO> getTodosByGroup(@RequestParam("groupName") String groupName) {
         System.out.println(groupName);
         return todoService.getTodosByGroup(groupName);
     }
@@ -71,7 +71,7 @@ public class HomeController {
     }
 
     @PutMapping("/todos/{id}")
-    public Todo updateTodo(@PathVariable Long id, @RequestBody Todo updatedTodo) {
+    public TodoDTO updateTodo(@PathVariable Long id, @RequestBody Todo updatedTodo) {
         return todoService.updateTodo(id, updatedTodo);
     }
 
@@ -82,7 +82,9 @@ public class HomeController {
 
     @DeleteMapping("/todos/group/{groupName}")
     public void deleteTodosByGroup(@PathVariable String groupName) {
-        todoService.deleteTodosByGroup(groupName);
+        System.out.println(groupName);
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        groupService.deleteTodosByGroup(groupName);
     }
 
 }

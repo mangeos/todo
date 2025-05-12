@@ -12,5 +12,4 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
 
     List<Todo> findByGroupName(String groupName);
 
-    void deleteByGroupName(String groupName);
 }
