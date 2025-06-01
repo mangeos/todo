@@ -1,12 +1,15 @@
 package com.example.demo.service.imp;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.GroupDTO;
+import com.example.demo.dto.GroupMembersDTO;
 import com.example.demo.dto.TodoDTO;
 import com.example.demo.model.Group;
 import com.example.demo.model.User;
@@ -118,7 +121,7 @@ public class GroupServiceImp implements GroupService {
                                                                                 todo.isChecked(),
                                                                                 todo.getDate()))
                                                                 .collect(Collectors.toList())))
-                                .collect(Collectors.toList());
+                                .toList();
         }
 
         @Override
@@ -138,5 +141,66 @@ public class GroupServiceImp implements GroupService {
                 }
                 // Radera gruppen från databasen
                 groupRepository.delete(group);
+        }
+
+        @Transactional
+        @Override
+        public GroupMembersDTO getGroupMembersByGroupName(String groupName) {
+                Group group = groupRepository.findByName(groupName);
+                if (group == null) {
+                        throw new RuntimeException("Grupp med namn " + groupName + " hittades inte");
+                }
+                System.out.println(groupName + " group members: " + group.getUsers());
+                // Force initialization of lazy-loaded users
+                Hibernate.initialize(group.getUsers());
+
+                List<String> members = group.getUsers().stream()
+                                .map(User::getUsername)
+                                .collect(Collectors.toList());
+
+                GroupMembersDTO groupMembersDTO = new GroupMembersDTO();
+                groupMembersDTO.setMembers(members);
+
+                return groupMembersDTO;
+        }
+
+        @Transactional
+        @Override
+        public GroupMembersDTO addGroupMembers(String groupName, GroupMembersDTO groupMembersDTO) {
+                Group group = groupRepository.findByName(groupName);
+                if (group == null) {
+                        throw new RuntimeException("Grupp med namn " + groupName + " hittades inte");
+                }
+                // Force initialization of lazy-loaded users
+                Hibernate.initialize(group.getUsers());
+                List<String> membersToAdd = groupMembersDTO.getMembers();
+                System.out.println("membersToAdd!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println(membersToAdd);
+                List<User> usersToAdd = membersToAdd.stream().map(member -> {
+                        // Hämta användaren från databasen baserat på användarnamnet
+                        return userRepository.findByUsername(member)
+                                        .orElseThrow(() -> new RuntimeException(
+                                                        "Användare med namn " + member + " hittades inte"));
+                }).collect(Collectors.toList());
+
+                // Lägg till användarna i gruppen
+                group.getUsers().addAll(usersToAdd);
+                System.out.println("group.getUsers()!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("Before saving group: " + group.getUsers());
+
+                for (User user : usersToAdd) {
+                        user.getGroups().add(group); // Lägg till gruppen till användarens lista också
+                }
+
+                // Spara gruppen med de nya medlemmarna
+                Group updatedGroup = groupRepository.save(group);
+                System.out.println("After saving group: " + updatedGroup.getUsers());
+                // Skapa en ny GroupMembersDTO med de uppdaterade medlemmarna
+                GroupMembersDTO updatedGroupMembersDTO = new GroupMembersDTO();
+                updatedGroupMembersDTO.setMembers(updatedGroup.getUsers().stream()
+                                .map(User::getUsername)
+                                .collect(Collectors.toList()));
+
+                return updatedGroupMembersDTO;
         }
 }

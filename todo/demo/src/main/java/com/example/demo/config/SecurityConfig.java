@@ -51,7 +51,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll() // Tillåt alla att nå
-                                                                                                // auth-endpoints
+
+                        .requestMatchers(HttpMethod.GET, "/groupmembers/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/groupmembers/**").permitAll()
+
+                        // auth-endpoints
                         .requestMatchers(HttpMethod.GET, "/todos/**").authenticated() // 🔒 Kräver autentisering för GET
                                                                                       // /todos/**
                         .requestMatchers(HttpMethod.POST, "/todos/**").authenticated() // 🔒 Kräver autentisering för

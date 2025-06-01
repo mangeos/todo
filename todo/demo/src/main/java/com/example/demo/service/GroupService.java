@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.example.demo.dto.GroupDTO;
+import com.example.demo.dto.GroupMembersDTO;
 import com.example.demo.model.Group;
 
 public interface GroupService {
@@ -15,5 +16,9 @@ public interface GroupService {
     List<GroupDTO> findAll();
 
     void deleteTodosByGroup(String groupName);
+
+    GroupMembersDTO getGroupMembersByGroupName(String groupName);
+
+    GroupMembersDTO addGroupMembers(String groupName, GroupMembersDTO groupMembersDTO);
 
 }

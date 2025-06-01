@@ -19,10 +19,10 @@ public class Group {
     private String name; // Gruppens namn
 
     // @JsonManagedReference // För att undvika cirkulär referens
-    @ManyToMany(mappedBy = "groups", fetch = FetchType.LAZY) // Ladda användare direkt
+    @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER) // Ladda användare direkt
     private List<User> users = new ArrayList<>(); // En grupp kan ha flera användare
 
     // @JsonManagedReference // För att undvika cirkulär referens
-    @OneToMany(mappedBy = "group", fetch = FetchType.LAZY) // Ladda användare direkt
+    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER) // Ladda användare direkt
     private List<Todo> todos = new ArrayList<>(); // En grupp har många todo-objekt
 }

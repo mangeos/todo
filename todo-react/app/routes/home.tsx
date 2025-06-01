@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import AddTodo from "~/components/addTodo";
+import GroupMembers from "~/components/groupMembers";
 
 interface Todo {
   id: number;
@@ -298,6 +299,7 @@ const Home = () => {
                 todo={todo}
                 onToggle={() => toggleChecked(todo.id)}
                 onRemove={() => removeTodo(todo.id)}
+                selectedGroup={selectedGroup || ""}
               />
             ))}
           </div>
