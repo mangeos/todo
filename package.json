@@ -1,0 +1,15 @@
+{
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "autoprefixer": "^10.4.21",
+    "tailwindcss": "^4.1.17",
+    "vite-tsconfig-paths": "^5.1.4"
+  },
+  "dependencies": {
+    "@react-router/dev": "^7.9.5",
+    "lucide-react": "^0.553.0",
+    "react-router-dom": "^7.9.5"
+  }
+}
